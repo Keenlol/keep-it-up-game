@@ -70,3 +70,12 @@ class Player:
         # print(self.jump_count)
         # Draw the player's hitbox
         pg.draw.rect(screen, (255, 0, 0), (self.position.x, self.position.y, self.width, self.height))
+
+    def check_window_bounds(self, left_bound, right_bound):
+        # Keep player within horizontal bounds
+        if self.position.x < left_bound:
+            self.position.x = left_bound
+            self.velocity.x = 0
+        elif self.position.x + self.width > right_bound:
+            self.position.x = right_bound - self.width
+            self.velocity.x = 0

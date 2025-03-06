@@ -4,8 +4,10 @@ from player import Player
 from ball import Ball
 
 class Game:
-    def __init__(self, width=800, height=600):
+    def __init__(self, width=1500, height=800):
         pg.init()
+        self.width = width
+        self.height = height
         self.screen = pg.display.set_mode((width, height))
         pg.display.set_caption("Keep IT Up")
         self.clock = pg.time.Clock()
@@ -32,6 +34,9 @@ class Game:
                     self.player.jump()
                 if event.key == pg.K_s:
                     self.player.force_fall()
+            
+            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                self.ball.luanch(pg.mouse.get_pos())
 
         #Key held
         held_key = pg.key.get_pressed()
@@ -44,15 +49,18 @@ class Game:
     def update(self):
         self.player.update_movement()
         self.player.check_collision_with_ground(self.ground_y)
+        self.player.check_window_bounds(0, self.width)
+        
         self.ball.update()
         self.ball.check_collision_with_player(self.player, self.ground_y)
         self.ball.check_collision_with_ground(self.ground_y)
+        self.ball.check_window_bounds(0, self.width)
 
     def draw(self):
         self.screen.fill((0, 0, 0))  # Clear screen with black
         self.player.draw(self.screen)
         self.ball.draw(self.screen)
-        pg.draw.line(self.screen, (255, 255, 255), (0, self.ground_y), (800, self.ground_y), 2)  # Draw the ground
+        pg.draw.line(self.screen, (255, 255, 255), (0, self.ground_y), (self.width, self.ground_y), 2)  # Draw the ground
         pg.display.flip()
 
     def run(self):
