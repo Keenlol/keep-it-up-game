@@ -42,13 +42,11 @@ class Game:
 
 
     def update(self):
-        keys = pg.key.get_pressed()
-        # self.player.move(keys)
         self.player.update_movement()
         self.player.check_collision_with_ground(self.ground_y)
         self.ball.update()
+        self.ball.check_collision_with_player(self.player, self.ground_y)
         self.ball.check_collision_with_ground(self.ground_y)
-        self.ball.check_collision_with_player(self.player)
 
     def draw(self):
         self.screen.fill((0, 0, 0))  # Clear screen with black

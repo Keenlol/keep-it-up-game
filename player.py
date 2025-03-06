@@ -67,6 +67,6 @@ class Player:
 
     def draw(self, screen):
         # print(self.velocity.x)
-        print(self.jump_count)
+        # print(self.jump_count)
         # Draw the player's hitbox
         pg.draw.rect(screen, (255, 0, 0), (self.position.x, self.position.y, self.width, self.height))

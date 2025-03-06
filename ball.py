@@ -7,28 +7,29 @@ class Ball:
         self.position = Vector2(spawn_loc)
         self.velocity = Vector2(0, 0)
         self.radius = 20
-        
+        self.is_overlap_player = False
+
         # Physics parameters
         self.gravity = 0.3
         self.max_fall_speed = 15
         self.bounce_strength = 8
         self.horizontal_influence = 0.1  # How much player's horizontal speed affects ball
-        self.vertical_influence = 0.9    # How much player's vertical speed affects ball
+        self.vertical_influence = 0.3    # How much player's vertical speed affects ball
         
     def update(self):
         # Apply gravity
         self.velocity.y += self.gravity
-        self.velocity.y = min(self.velocity.y, self.max_fall_speed)
+        self.velocity.y = self.velocity.y#, self.max_fall_speed
         
         # Update position
         self.position += self.velocity
-        
+
     def check_collision_with_ground(self, ground_y):
         if self.position.y + self.radius >= ground_y:
             self.position.y = ground_y - self.radius
             self.velocity.y = -self.bounce_strength * 0.2  # Bounce with 60% strength
             
-    def check_collision_with_player(self, player:Player):
+    def check_collision_with_player(self, player:Player, ground_y):
         # Calculate the closest point on the rectangle to the circle
         closest_x = max(player.position.x, min(self.position.x, player.position.x + player.width))
         closest_y = max(player.position.y, min(self.position.y, player.position.y + player.height))
@@ -37,22 +38,30 @@ class Ball:
         distance = Vector2(self.position.x - closest_x, self.position.y - closest_y).length()
         
         # If distance is less than the circle's radius, collision occurred
-        if distance < self.radius:
-            # Calculate bounce direction based on player's velocity
-            bounce_direction = Vector2(0, -1)  # Default upward bounce
-            
-            # Add player's velocity influence
-            bounce_direction.x += player.velocity.x * self.horizontal_influence
-            bounce_direction.y += min(player.velocity.y, 0) * self.vertical_influence
-            
-            # Normalize and apply bounce
-            if bounce_direction.length() > 0:
-                bounce_direction = bounce_direction.normalize()
-            self.velocity = bounce_direction * self.bounce_strength
-            
-            # Move ball outside of player to prevent multiple collisions
-            overlap = self.radius - distance
-            self.position += bounce_direction * overlap
+        if distance < self.radius and not self.is_overlap_player:
+            print("contact " ,end="")
+            if self.position.y + self.radius >= ground_y - 10 and player.velocity.y > 0:
+                self.velocity = Vector2(0, -13)
+            else:
+                # Calculate bounce direction based on player's velocity
+                bounce_direction = Vector2(0, -1)  # Default upward bounce
+                
+                # Add player's velocity influence
+                bounce_direction.x += player.velocity.x * self.horizontal_influence
+                print("ver in flu",min(player.velocity.y, 0) * self.vertical_influence)
+
+                # Normalize and apply bounce
+                if bounce_direction.length() > 0:
+                    bounce_direction = bounce_direction.normalize()
+                self.velocity = bounce_direction * self.bounce_strength
+                self.velocity.y += min(player.velocity.y, 0) * self.vertical_influence
+                
+            self.is_overlap_player = True
+                # Move ball outside of player to prevent multiple collisions
+                # overlap = self.radius - distance
+                # self.position += bounce_direction * overlap
+        elif distance > self.radius + 10:
+            self.is_overlap_player = False
             
     def draw(self, screen):
         pg.draw.circle(screen, (255, 255, 0), (int(self.position.x), int(self.position.y)), self.radius)
