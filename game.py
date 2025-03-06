@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 from player import Player
+from ball import Ball
 
 class Game:
     def __init__(self, width=800, height=600):
@@ -12,6 +13,7 @@ class Game:
         self.load_assets()
         self.player = Player((100, 100))
         self.ground_y = 550
+        self.ball = Ball((400, 100))  # Create ball in middle of screen
 
     def load_assets(self):
         # Load images and other assets here
@@ -44,10 +46,14 @@ class Game:
         # self.player.move(keys)
         self.player.update_movement()
         self.player.check_collision_with_ground(self.ground_y)
+        self.ball.update()
+        self.ball.check_collision_with_ground(self.ground_y)
+        self.ball.check_collision_with_player(self.player)
 
     def draw(self):
         self.screen.fill((0, 0, 0))  # Clear screen with black
         self.player.draw(self.screen)
+        self.ball.draw(self.screen)
         pg.draw.line(self.screen, (255, 255, 255), (0, self.ground_y), (800, self.ground_y), 2)  # Draw the ground
         pg.display.flip()
 

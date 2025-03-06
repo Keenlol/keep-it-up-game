@@ -15,8 +15,8 @@ class Player:
 
         # Physics parameters
         self.acceleration_rate = 0.9
-        self.deceleration_rate = 0.3
-        self.max_speed = 5
+        self.deceleration_rate = 0.9
+        self.max_speed = 7
         self.jump_strength = -10
         self.gravity = 0.5
         self.max_fall_speed = 10
@@ -39,7 +39,7 @@ class Player:
 
     def update_movement(self):
         # Apply friction
-        if self.velocity.x != 0:
+        if self.velocity.x != 0 and self.acceleration.x == 0:
             self.acceleration.x -= self.deceleration_rate * self.velocity.x / abs(self.velocity.x)
 
         # Update velocity and position
